@@ -22,7 +22,6 @@ public class WorldManager {
 		int column = height/TILESIZE;
 		worldMaps.put(seed, new WorldData(row,column,seed));
 		ArrayList<GridNode> test =	new GridGraph(row,column).getNodeList();
-			
 		
 	}
 	
