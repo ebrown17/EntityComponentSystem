@@ -10,6 +10,18 @@ public class Main {
 		
 		new WorldManager(25, null).generateWorld(400, 400, seed);
 		
+		RenderSystem renderSystem = new RenderSystem(25,25,5);
+		while(true){
+			renderSystem.processOneTick(System.nanoTime());
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 		/*EntityManager em = new EntityManager();
 		
 		for(int i=0; i < 5; i++){
