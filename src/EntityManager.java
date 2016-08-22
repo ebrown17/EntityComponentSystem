@@ -1,5 +1,8 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class EntityManager {
@@ -63,6 +66,18 @@ public class EntityManager {
 		if( result == null ) throw new IllegalArgumentException( "GET FAIL: "+entity+" does not possess Component of class\n   missing: "+componentType );
 
 		return result;
+	}
+	
+	public <T extends Component> Collection<T> getAllComponentsOfType(Class<T> componentType){
+		
+			HashMap<Integer, ? extends Component> entitesWithComponent = componentMap.get(componentType);
+
+			if (entitesWithComponent == null)
+				return new LinkedList<T>();
+			
+			
+			return (Collection<T>) entitesWithComponent.values();
+		
 	}
 
 	

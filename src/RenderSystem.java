@@ -1,10 +1,10 @@
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 import javax.swing.JFrame;
 
@@ -17,15 +17,17 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 	final double ns = 1000000000.0 / 60;
 	double delta = 0.0;
 	private long previousGameTick, frameTime=0;
-	//private BufferedImage image;
-	
+	private EntityManager em;
+	private BufferedImage image;	
 
-	public RenderSystem(int width,int height,int tileSize){
+	public RenderSystem(int width,int height,int tileSize,EntityManager em){
 		this.width=width;
 		this.height=height;
 		this.tileSize=tileSize;		
+		this.em = em;
+		this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		
-		setPreferredSize(new Dimension(800,800));
+		setPreferredSize(new Dimension(width,height));
 		frame = new JFrame();
 		frame.setResizable(false);
 		frame.setTitle("Testing");
@@ -44,15 +46,19 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 			createBufferStrategy(2);
 			return;
 		}
-		
-		
-		
-		
+		Collection<Renderable> test = em.getAllComponentsOfType(Renderable.class);
 		
 		Graphics2D g2d = (Graphics2D) bs.getDrawGraphics();
-		g2d.setColor(Color.CYAN);
-		g2d.fillRect(15, 15, 50, 50);
+		Graphics g =image.getGraphics();
+		
+		for(Renderable rend : test){	
+			g.setColor(rend.tile.color);
+			g.fillRect(rend.position.x*5, rend.position.y*5, 5, 5);
+		
+		}
+		g2d.drawImage(image, 0, 0, getWidth(), getHeight(),null);
 		g2d.dispose();
+		g.dispose();
 		bs.show();
 		
 		fps++;
@@ -63,5 +69,6 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 		}
 		frame.setTitle("Testing | " + " FPS: " + fpsAvg );
 	}
+	
 
 }
