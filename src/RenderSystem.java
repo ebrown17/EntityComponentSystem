@@ -1,5 +1,6 @@
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
@@ -18,15 +19,19 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 	double delta = 0.0;
 	private long previousGameTick, frameTime=0;
 	private EntityManager em;
-	private BufferedImage image;	
+	private BufferStrategy buffer;
+	private Graphics2D baseGraphics;
+	private Graphics2D baseBufferedGraphics;
+	private Collection<Renderable> renderables;
+	private Font fpsFont = new Font("Courier New",Font.PLAIN,12);
+	private BufferedImage baseImage;
 
 	public RenderSystem(int width,int height,int tileSize,EntityManager em){
 		this.width=width;
 		this.height=height;
 		this.tileSize=tileSize;		
 		this.em = em;
-		this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		
+		this.baseImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		setPreferredSize(new Dimension(width,height));
 		frame = new JFrame();
 		frame.setResizable(false);
@@ -41,25 +46,24 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 	
 	@Override
 	public void processOneTick(long lastFrameTick) {
-		BufferStrategy bs = getBufferStrategy();
-		if(bs==null){
+		buffer = getBufferStrategy();
+		if(buffer==null){
 			createBufferStrategy(2);
 			return;
 		}
-		Collection<Renderable> test = em.getAllComponentsOfType(Renderable.class);
+		renderables = em.getAllComponentsOfType(Renderable.class);
 		
-		Graphics2D g2d = (Graphics2D) bs.getDrawGraphics();
-		Graphics g =image.getGraphics();
+		// get buffered image to draw to
+		baseGraphics = (Graphics2D) baseImage.getGraphics();
 		
-		for(Renderable rend : test){	
-			g.setColor(rend.tile.color);
-			g.fillRect(rend.position.x*5, rend.position.y*5, 5, 5);
+		baseBufferedGraphics = (Graphics2D) buffer.getDrawGraphics();
 		
+		for(Renderable rendable : renderables){	
+			baseGraphics.setColor(rendable.tile.color);
+			baseGraphics.fillRect(rendable.position.x*5, rendable.position.y*5, 5, 5);
 		}
-		g2d.drawImage(image, 0, 0, getWidth(), getHeight(),null);
-		g2d.dispose();
-		g.dispose();
-		bs.show();
+		
+		baseBufferedGraphics.drawImage(baseImage, 0, 0, null);	
 		
 		fps++;
 		if(lastFrameTick-previousGameTick>1000000000){
@@ -68,6 +72,13 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 			fps=0;
 		}
 		frame.setTitle("Testing | " + " FPS: " + fpsAvg );
+		
+		
+		baseBufferedGraphics.dispose();
+		baseGraphics.dispose();
+		buffer.show();
+		baseBufferedGraphics = null;
+		baseGraphics = null;
 	}
 	
 
