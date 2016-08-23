@@ -1,34 +1,24 @@
-import java.util.Random;
-
-import map_utils.TileType;
+import graph_utils.nodes.GridNode;
+import map_utils.mazes.RecursiveMaze;
 
 public class Main {
 
 	
 	public static void main(String[] args){
 		String seed = "TESTers";		
-		new WorldManager(25, null).generateWorld(400, 400, seed);
-		
+		//RecursiveMaze maze = new WorldManager(25, null).generateWorld(400, 400, seed);
+		RecursiveMaze maze = new RecursiveMaze(80,80);
 		EntityManager em = new EntityManager();
 		RenderSystem renderSystem = new RenderSystem(400,400,5,em);
-		int count =0;
-		for(int i=0; i < 80; i++){
-			for(int j=0;j<80; j++) {
-				int entity = em.createEntity();
-				Position pos = new Position(i,j);
-				Renderable r;
-				if(count %2 == 0){
-					r = new Renderable(pos,TileType.WALL);
-				} 
-				else {
-					r = new Renderable(pos,TileType.CLEAR);
-				}
-				
-				em.addComponent(entity,pos);
-				em.addComponent(entity,r);
-				count++;
-			}			
+		
+		for(GridNode node : maze.getNodeList()){
+			int entity = em.createEntity();
+			Position pos = new Position(node.postion.x,node.postion.y);
+			Renderable r =  new Renderable(pos,node.tile);
+			em.addComponent(entity,pos);
+			em.addComponent(entity,r);
 		}
+	
 		
 		
 		while(true){
