@@ -5,7 +5,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.JFrame;
 
@@ -57,10 +59,11 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 		baseGraphics = (Graphics2D) baseImage.getGraphics();
 		
 		baseBufferedGraphics = (Graphics2D) buffer.getDrawGraphics();
-		
-		for(Renderable rendable : renderables){	
-			baseGraphics.setColor(rendable.tile.color);
-			baseGraphics.fillRect(rendable.position.x*5, rendable.position.y*5, 5, 5);
+	
+		for(Iterator<Renderable> rendable = renderables.iterator();rendable.hasNext();){
+			Renderable rend = rendable.next();
+			baseGraphics.setColor(rend.tile.color);
+			baseGraphics.fillRect(rend.position.x*5, rend.position.y*5, 5, 5);
 		}
 		
 		baseBufferedGraphics.drawImage(baseImage, 0, 0, null);	
@@ -70,8 +73,9 @@ public class RenderSystem extends Canvas implements SystemProcessor{
 			previousGameTick=lastFrameTick;
 			fpsAvg=fps;
 			fps=0;
+			frame.setTitle("Testing | " + " FPS: " + fpsAvg );
 		}
-		frame.setTitle("Testing | " + " FPS: " + fpsAvg );
+		
 		
 		
 		baseBufferedGraphics.dispose();
